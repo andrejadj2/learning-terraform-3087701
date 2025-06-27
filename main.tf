@@ -33,8 +33,7 @@ module "vpc" {
 
 module "autoscaling" {
   source  = "terraform-aws-modules/autoscaling/aws"
-  version = "9.0.0"
-  # insert the 1 required variable here
+  version = "6.5.2"
 
   name = "blog"
   min_size = 1
@@ -66,12 +65,6 @@ module "blog_alb" {
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "instance"
-      targets = {
-        ma_target = {
-          target_id = aws_instance.blog.id
-          port = 80
-        }
-      }
     }
   ]
 
