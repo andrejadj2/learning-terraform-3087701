@@ -69,6 +69,7 @@ module "blog_alb" {
       port               = 80
       protocol           = "HTTP"
       target_group_index = 0
+      type               = "forward"
     }
   ]
 
@@ -79,7 +80,7 @@ module "blog_alb" {
 
 resource "aws_autoscaling_attachment" "asg_attachment" {
   autoscaling_group_name = module.blog_autoscaling.autoscaling_group_name
-  lb_target_group_arn    = module.blog_alb.target_groups["0"].arn
+  lb_target_group_arn    = values(module.blog_alb.target_groups)[0].arn
 }
 
 module "blog_sg" {
