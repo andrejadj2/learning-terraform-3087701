@@ -32,8 +32,7 @@ module "vpc" {
 }
 
 module "autoscaling" {
-  source  = "terraform-aws-modules/autoscaling/aws"
-  version = "5.2.0"
+  source  = "git::https://github.com/terraform-aws-modules/terraform-aws-autoscaling.git?ref=v5.2.0"
 
   name = "blog"
   min_size = 1
