@@ -70,7 +70,7 @@ module "blog_alb" {
       port               = 80
       protocol           = "HTTP"
       target_group_index = 0
-      type               = "forward"
+      forward            = {}  # ← Ovo eksplicitno definiše default_action
     }
   ]
 
