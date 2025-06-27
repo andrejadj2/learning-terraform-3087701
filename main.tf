@@ -69,12 +69,10 @@ module "blog_alb" {
     {
       port     = 80
       protocol = "HTTP"
-      default_action = [
-        {
-          type             = "forward"
-          target_group_arn = values(module.blog_alb.target_groups)[0].arn
-        }
-      ]
+      default_action = {
+        type             = "forward"
+        target_group_arn = values(module.blog_alb.target_groups)[0].arn
+      }
     }
   ]
 
