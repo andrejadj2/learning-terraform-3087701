@@ -69,8 +69,11 @@ module "blog_alb" {
     {
       port               = 80
       protocol           = "HTTP"
-      target_group_index = 0
-      forward            = {}  # ← Ovo eksplicitno definiše default_action
+      forward = {
+        target_group = {
+          arn = values(module.blog_alb.target_groups)[0].arn
+        }
+      }
     }
   ]
 
