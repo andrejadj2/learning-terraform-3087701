@@ -48,7 +48,7 @@ module "autoscaling" {
 
 module "blog_alb" {
   source = "terraform-aws-modules/alb/aws"
-  version = "~> 6.0"
+  version = "5.12.0"
 
   name    = "blog-alb"
 
