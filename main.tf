@@ -16,7 +16,7 @@ data "aws_ami" "app_ami" {
 
 module "blog_vpc" {
   source = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"  # Ažurirana verzija
+  version = "~> 6.0.1"  # Ažurirana verzija
 
   name = "dev"
   cidr = "10.0.0.0/16"
@@ -33,7 +33,7 @@ module "blog_vpc" {
 
 module "blog_autoscaling" {
   source  = "terraform-aws-modules/autoscaling/aws"
-  version = "~> 7.0"
+  version = "~> 9.0.0"
 
   name = "blog"
 
@@ -48,7 +48,7 @@ module "blog_autoscaling" {
 
 module "blog_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 9.0"  # Ažurirana verzija
+  version = "~> 9.17.0"  # Ažurirana verzija
 
   name = "blog-alb"
 
@@ -86,7 +86,7 @@ module "blog_alb" {
 
 module "blog_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 5.0"  # Ažurirana verzija
+  version = "~> 5.3.0"  # Ažurirana verzija
 
   vpc_id  = module.blog_vpc.vpc_id
   name    = "blog"
