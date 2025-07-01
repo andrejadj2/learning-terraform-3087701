@@ -31,6 +31,56 @@ module "blog_vpc" {
 }
 
 
+module "blog_alb" {
+  source  = "terraform-aws-modules/alb/aws"
+  version = "~> 9.17.0"
+
+  name               = "blog-alb"
+  load_balancer_type = "application"
+  vpc_id             = module.blog_vpc.vpc_id
+  subnets            = module.blog_vpc.public_subnets
+  security_groups    = [module.blog_sg.security_group_id]
+
+  # Simplified listener configuration
+  listeners = {
+    http = {
+      port     = 80
+      protocol = "HTTP"
+      forward = {
+        target_group_key = "blog_tg"
+      }
+    }
+  }
+
+  # Simplified target group configuration
+  target_groups = {
+    blog_tg = {
+      create_attachment = false  # We'll attach through ASG
+      name_prefix       = "blog-"
+      protocol          = "HTTP"
+      port              = 80
+      target_type       = "instance"
+      
+      # Health check settings
+      health_check = {
+        enabled             = true
+        interval            = 30
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        timeout             = 6
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
+    }
+  }
+
+  tags = {
+    Environment = "dev"
+  }
+}
+
 module "blog_autoscaling" {
   source  = "terraform-aws-modules/autoscaling/aws"
   version = "~> 9.0.0"
@@ -58,41 +108,20 @@ module "blog_autoscaling" {
       traffic_source_type       = "elbv2"
     }
   }
-}
 
-module "blog_alb" {
-  source  = "terraform-aws-modules/alb/aws"
-  version = "~> 9.17.0"
-
-  name = "blog-alb"
-  load_balancer_type = "application"
-
-  vpc_id             = module.blog_vpc.vpc_id
-  subnets            = module.blog_vpc.public_subnets
-  security_groups    = [module.blog_sg.security_group_id]
-
-  listeners = {
-    http = {
-      port     = 80
-      protocol = "HTTP"
-      forward = {
-        target_group_key = "blog_tg"
+  # Health check configuration
+  health_check_type         = "ELB"
+  health_check_grace_period = 300
+  
+  # Tags
+  tag_specifications = [
+    {
+      resource_type = "instance"
+      tags = {
+        Name = "blog-instance"
       }
     }
-  }
-
-  target_groups = {
-    blog_tg = {
-      name_prefix      = "blog-"
-      backend_protocol = "HTTP"
-      backend_port     = 80
-      target_type      = "instance"
-    }
-  }
-
-  tags = {
-    Environment = "dev"
-  }
+  ]
 }
 
 module "blog_sg" {
