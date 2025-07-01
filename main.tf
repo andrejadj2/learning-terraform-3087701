@@ -40,31 +40,37 @@ module "blog_autoscaling" {
   min_size            = 1
   max_size            = 2
   vpc_zone_identifier = module.blog_vpc.public_subnets
-  security_groups     = [module.blog_sg.security_group_id]
-  instance_type       = var.instance_type
-  image_id            = data.aws_ami.app_ami.id
-
-  launch_template_name = "blog-lt"
- 
-  # Premestite target_group_arns ovde
-  launch_template = {
-    target_group_arns = [module.blog_alb.target_groups["blog_tg"].arn]
+  
+  # Launch template configuration
+  launch_template_name        = "blog-lt"
+  launch_template_description = "Launch template for blog application"
+  update_default_version      = true
+  
+  # Instance configuration
+  image_id        = data.aws_ami.app_ami.id
+  instance_type   = var.instance_type
+  security_groups = [module.blog_sg.security_group_id]
+  
+  # Attach target group
+  traffic_source_attachments = {
+    blog_tg = {
+      traffic_source_identifier = module.blog_alb.target_groups["blog_tg"].arn
+      traffic_source_type       = "elbv2"
+    }
   }
 }
 
 module "blog_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 9.17.0"  # Ažurirana verzija
+  version = "~> 9.17.0"
 
   name = "blog-alb"
-
   load_balancer_type = "application"
 
   vpc_id             = module.blog_vpc.vpc_id
   subnets            = module.blog_vpc.public_subnets
   security_groups    = [module.blog_sg.security_group_id]
 
-  # Promenjeno: Nova struktura za listenere
   listeners = {
     http = {
       port     = 80
@@ -75,7 +81,6 @@ module "blog_alb" {
     }
   }
 
-  # Promenjeno: Nova struktura za target groups
   target_groups = {
     blog_tg = {
       name_prefix      = "blog-"
