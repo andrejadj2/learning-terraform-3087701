@@ -49,6 +49,7 @@ module "blog_autoscaling" {
   # Premestite target_group_arns ovde
   launch_template = {
     target_group_arns = [module.blog_alb.target_groups["blog_tg"].arn]
+  }
 }
 
 module "blog_alb" {
