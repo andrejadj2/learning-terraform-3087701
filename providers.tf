@@ -2,7 +2,8 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 6.0.0, < 7.0.0"
+      # fiksiraj se na 6.0.x seriju, isključi 6.1.0:
+      version = ">= 6.0.0, < 6.1.0"
     }
   }
 }
