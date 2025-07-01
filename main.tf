@@ -44,9 +44,11 @@ module "blog_autoscaling" {
   instance_type       = var.instance_type
   image_id            = data.aws_ami.app_ami.id
 
-  # Dodajte target grupe kroz launch template
   launch_template_name = "blog-lt"
-  target_group_arns    = [module.blog_alb.target_groups["blog_tg"].arn]
+ 
+  # Premestite target_group_arns ovde
+  launch_template = {
+    target_group_arns = [module.blog_alb.target_groups["blog_tg"].arn]
 }
 
 module "blog_alb" {
